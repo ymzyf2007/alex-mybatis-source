@@ -12,6 +12,12 @@ import java.sql.SQLException;
  */
 public abstract class BaseTypeHandler<T> extends TypeReference<T> implements TypeHandler<T> {
 
+	protected Configuration configuration;
+
+	public void setConfiguration(Configuration c) {
+		this.configuration = c;
+	}
+
 	@Override
 	public void setParameter(PreparedStatement ps, int i, T parameter, JdbcType jdbcType) throws SQLException {
 		// TODO Auto-generated method stub
