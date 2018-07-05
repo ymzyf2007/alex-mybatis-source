@@ -1,7 +1,16 @@
 package org.apache.ibatis.session;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Properties;
+import java.util.Set;
+
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.mapping.Environment;
+import org.apache.ibatis.reflection.factory.DefaultObjectFactory;
+import org.apache.ibatis.reflection.factory.ObjectFactory;
+import org.apache.ibatis.reflection.wrapper.ObjectWrapperFactory;
+import org.apache.ibatis.type.JdbcType;
 
 /**
  * MyBatis配置，里面好多配置项
@@ -26,21 +35,21 @@ public class Configuration {
 	protected String logPrefix;
 	protected Class <? extends Log> logImpl;
 	protected LocalCacheScope localCacheScope = LocalCacheScope.SESSION;
+	protected JdbcType jdbcTypeForNull = JdbcType.OTHER;
+	protected Set<String> lazyLoadTriggerMethods = new HashSet<String>(Arrays.asList(new String[] { "equals", "clone", "hashCode", "toString" }));
+	protected Integer defaultStatementTimeout;
+	// 默认为简单执行器
+	protected ExecutorType defaultExecutorType = ExecutorType.SIMPLE;
+	protected AutoMappingBehavior autoMappingBehavior = AutoMappingBehavior.PARTIAL;
+	//---------以上都是<settings>节点-------
+	
+	
+	protected Properties variables = new Properties();
+	// 对象工厂和对象包装器工厂
+	protected ObjectFactory objectFactory = new DefaultObjectFactory();
+	protected ObjectWrapperFactory objectWrapperFactory = new DefaultObjectWrapperFactory();
 	
 //	  
-//	  
-//	  protected JdbcType jdbcTypeForNull = JdbcType.OTHER;
-//	  protected Set<String> lazyLoadTriggerMethods = new HashSet<String>(Arrays.asList(new String[] { "equals", "clone", "hashCode", "toString" }));
-//	  protected Integer defaultStatementTimeout;
-//	  //默认为简单执行器
-//	  protected ExecutorType defaultExecutorType = ExecutorType.SIMPLE;
-//	  protected AutoMappingBehavior autoMappingBehavior = AutoMappingBehavior.PARTIAL;
-//	  //---------以上都是<settings>节点-------
-//
-//	  protected Properties variables = new Properties();
-//	  //对象工厂和对象包装器工厂
-//	  protected ObjectFactory objectFactory = new DefaultObjectFactory();
-//	  protected ObjectWrapperFactory objectWrapperFactory = new DefaultObjectWrapperFactory();
 //	  //映射注册机
 //	  protected MapperRegistry mapperRegistry = new MapperRegistry(this);
 //
