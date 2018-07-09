@@ -3,6 +3,7 @@ package org.apache.ibatis.parsing;
 import java.util.Properties;
 
 import org.w3c.dom.CharacterData;
+import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -75,70 +76,92 @@ public class XNode {
 		return null;
 	}
 	
+	/**
+	 * 取得完全的path (a/b/c)
+	 * @return
+	 */
+	public String getPath() {
+		// 循环依次取得节点的父节点，然后倒序打印,也可以用一个堆栈实现
+		StringBuilder builder = new StringBuilder();
+		Node current = node;
+		while(current != null && current instanceof Element) {
+			if(current != node) {
+				builder.insert(0, "/");
+			}
+			builder.insert(0, current.getNodeName());
+			current = current.getParentNode();
+		}
+		return builder.toString();
+	}
 	
-
+	/**
+	 * 取得标识符("resultMap[authorResult]")
+	 * XMLMapperBuilder.resultMapElement调用
+	 * <resultMap id="authorResult" type="Author">
+	 * 	<id property="id" column="author_id"/>
+	 *  <result property="username" column="author_username"/>
+	 *  <result property="password" column="author_password"/>
+	 *  <result property="email" column="author_email"/>
+	 *  <result property="bio" column="author_bio"/>
+	 * </resultMap>
+	 * @return
+	 */
+	public String getValueBasedIdentifier() {
+		StringBuilder builder = new StringBuilder();
+		XNode current = this;
+		while(current != null) {
+			if(current != this) {
+				builder.insert(0, "_");
+			}
+			// 先拿id，拿不到再拿value，再拿不到拿property
+			String value = current.getStringAttribute("id", current.getStringAttribute("value", current.getStringAttribute("property", null)));
+			if(value != null) {
+				value = value.replace('.', '_');
+				builder.insert(0, "]");
+				builder.insert(0, value);
+				builder.insert(0, "[");
+			}
+			builder.insert(0, current.getName());
+			current = current.getParent();
+		}
+		return builder.toString();
+	}
+	
+	public String getStringAttribute(String name) {
+		return getStringAttribute(name, null);
+	}
+	
+	public String getStringAttribute(String name, String def) {
+		String value = attributes.getProperty(name);
+		if(value == null) {
+			return def;
+		} else {
+			return value;
+		}
+	}
+	
+	public Node getNode() {
+		return node;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public XNode getParent() {
+		// 调用Node.getParentNode,如果取到，包装一下，返回XNode
+		Node parent = node.getParentNode();
+		if(parent == null || !(parent instanceof Element)) {
+			return null;
+		} else {
+			return new XNode(xpathParser, parent, variables);
+		}
+	}
+	
 	
 	
 //	  public XNode newXNode(Node node) {
 //	    return new XNode(xpathParser, node, variables);
-//	  }
-//
-//	  public XNode getParent() {
-//			//调用Node.getParentNode,如果取到，包装一下，返回XNode
-//	    Node parent = node.getParentNode();
-//	    if (parent == null || !(parent instanceof Element)) {
-//	      return null;
-//	    } else {
-//	      return new XNode(xpathParser, parent, variables);
-//	    }
-//	  }
-//
-//	  //取得完全的path (a/b/c)
-//	  public String getPath() {
-//	    //循环依次取得节点的父节点，然后倒序打印,也可以用一个堆栈实现
-//	    StringBuilder builder = new StringBuilder();
-//	    Node current = node;
-//	    while (current != null && current instanceof Element) {
-//	      if (current != node) {
-//	        builder.insert(0, "/");
-//	      }
-//	      builder.insert(0, current.getNodeName());
-//	      current = current.getParentNode();
-//	    }
-//	    return builder.toString();
-//	  }
-//
-//		//取得标示符   ("resultMap[authorResult]")
-//		//XMLMapperBuilder.resultMapElement调用
-////		<resultMap id="authorResult" type="Author">
-////		  <id property="id" column="author_id"/>
-////		  <result property="username" column="author_username"/>
-////		  <result property="password" column="author_password"/>
-////		  <result property="email" column="author_email"/>
-////		  <result property="bio" column="author_bio"/>
-////		</resultMap>
-//	  public String getValueBasedIdentifier() {
-//	    StringBuilder builder = new StringBuilder();
-//	    XNode current = this;
-//	    while (current != null) {
-//	      if (current != this) {
-//	        builder.insert(0, "_");
-//	      }
-//	      //先拿id，拿不到再拿value,再拿不到拿property
-//	      String value = current.getStringAttribute("id",
-//	          current.getStringAttribute("value",
-//	              current.getStringAttribute("property", null)));
-//	      if (value != null) {
-//	        value = value.replace('.', '_');
-//	        builder.insert(0, "]");
-//	        builder.insert(0,
-//	            value);
-//	        builder.insert(0, "[");
-//	      }
-//	      builder.insert(0, current.getName());
-//	      current = current.getParent();
-//	    }
-//	    return builder.toString();
 //	  }
 //
 //	  //以下方法都是把XPathParser的方法再重复一遍
@@ -160,14 +183,6 @@ public class XNode {
 //
 //	  public XNode evalNode(String expression) {
 //	    return xpathParser.evalNode(node, expression);
-//	  }
-//
-//	  public Node getNode() {
-//	    return node;
-//	  }
-//
-//	  public String getName() {
-//	    return name;
 //	  }
 //
 //	  //以下是一些getBody的方法
@@ -257,18 +272,6 @@ public class XNode {
 //	    }
 //	  }
 //
-//	  public String getStringAttribute(String name) {
-//	    return getStringAttribute(name, null);
-//	  }
-//
-//	  public String getStringAttribute(String name, String def) {
-//	    String value = attributes.getProperty(name);
-//	    if (value == null) {
-//	      return def;
-//	    } else {
-//	      return value;
-//	    }
-//	  }
 //
 //	  public Boolean getBooleanAttribute(String name) {
 //	    return getBooleanAttribute(name, null);

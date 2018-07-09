@@ -43,13 +43,11 @@ public class Configuration {
 	protected AutoMappingBehavior autoMappingBehavior = AutoMappingBehavior.PARTIAL;
 	//---------以上都是<settings>节点-------
 	
-	
 	protected Properties variables = new Properties();
 	// 对象工厂和对象包装器工厂
 	protected ObjectFactory objectFactory = new DefaultObjectFactory();
 	protected ObjectWrapperFactory objectWrapperFactory = new DefaultObjectWrapperFactory();
 	
-//	  
 //	  //映射注册机
 //	  protected MapperRegistry mapperRegistry = new MapperRegistry(this);
 //
