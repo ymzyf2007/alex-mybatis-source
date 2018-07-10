@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.apache.ibatis.reflection.factory.ObjectFactory;
+import org.apache.ibatis.reflection.property.PropertyTokenizer;
+import org.apache.ibatis.reflection.wrapper.CollectionWrapper;
 import org.apache.ibatis.reflection.wrapper.ObjectWrapper;
 import org.apache.ibatis.reflection.wrapper.ObjectWrapperFactory;
 
@@ -20,6 +22,7 @@ public class MetaObject {
 	private ObjectFactory objectFactory;
 	private ObjectWrapperFactory objectWrapperFactory;
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private MetaObject(Object object, ObjectFactory objectFactory, ObjectWrapperFactory objectWrapperFactory) {
 		this.originalObject = object;
 	    this.objectFactory = objectFactory;
@@ -42,6 +45,60 @@ public class MetaObject {
 	    	this.objectWrapper = new BeanWrapper(this, object);
 	    }
 	}
+	
+	/**
+	 * 取得值
+	 * 如person[0].birthdate.year
+	 * 具体测试用例可以看MetaObjectTest
+	 * @param name
+	 * @return
+	 */
+	public Object getValue(String name) {
+		PropertyTokenizer prop = new PropertyTokenizer(name);
+		
+		
+	}
+	
+//	  public Object getValue(String name) {
+//	    
+//	    if (prop.hasNext()) {
+//	      MetaObject metaValue = metaObjectForProperty(prop.getIndexedName());
+//	      if (metaValue == SystemMetaObject.NULL_META_OBJECT) {
+//	          //如果上层就是null了，那就结束，返回null
+//	        return null;
+//	      } else {
+//	          //否则继续看下一层，递归调用getValue
+//	       return metaValue.getValue(prop.getChildren());
+//	      }
+//	    } else {
+//	      return objectWrapper.get(prop);
+//	    }
+//	  }
+//
+//	  //设置值
+//	  //如person[0].birthdate.year
+//	  public void setValue(String name, Object value) {
+//	    PropertyTokenizer prop = new PropertyTokenizer(name);
+//	    if (prop.hasNext()) {
+//	      MetaObject metaValue = metaObjectForProperty(prop.getIndexedName());
+//	      if (metaValue == SystemMetaObject.NULL_META_OBJECT) {
+//	        if (value == null && prop.getChildren() != null) {
+//	          // don't instantiate child path if value is null
+//	          //如果上层就是null了，还得看有没有儿子，没有那就结束
+//	          return;
+//	        } else {
+//	            //否则还得new一个，委派给ObjectWrapper.instantiatePropertyValue
+//	          metaValue = objectWrapper.instantiatePropertyValue(name, prop, objectFactory);
+//	        }
+//	      }
+//	      //递归调用setValue
+//	      metaValue.setValue(prop.getChildren(), value);
+//	    } else {
+//	        //到了最后一层了，所以委派给ObjectWrapper.set
+//	      objectWrapper.set(prop, value);
+//	    }
+//	  }
+//
 
 //	public static MetaObject forObject(Object object, ObjectFactory objectFactory, ObjectWrapperFactory objectWrapperFactory) {
 //	    if (object == null) {
@@ -99,50 +156,6 @@ public class MetaObject {
 //	  public boolean hasGetter(String name) {
 //	    return objectWrapper.hasGetter(name);
 //	  }
-//
-//	  //取得值
-//	  //如person[0].birthdate.year
-//	  //具体测试用例可以看MetaObjectTest
-//	  public Object getValue(String name) {
-//	    PropertyTokenizer prop = new PropertyTokenizer(name);
-//	    if (prop.hasNext()) {
-//	      MetaObject metaValue = metaObjectForProperty(prop.getIndexedName());
-//	      if (metaValue == SystemMetaObject.NULL_META_OBJECT) {
-//	          //如果上层就是null了，那就结束，返回null
-//	        return null;
-//	      } else {
-//	          //否则继续看下一层，递归调用getValue
-//	       return metaValue.getValue(prop.getChildren());
-//	      }
-//	    } else {
-//	      return objectWrapper.get(prop);
-//	    }
-//	  }
-//
-//	  //设置值
-//	  //如person[0].birthdate.year
-//	  public void setValue(String name, Object value) {
-//	    PropertyTokenizer prop = new PropertyTokenizer(name);
-//	    if (prop.hasNext()) {
-//	      MetaObject metaValue = metaObjectForProperty(prop.getIndexedName());
-//	      if (metaValue == SystemMetaObject.NULL_META_OBJECT) {
-//	        if (value == null && prop.getChildren() != null) {
-//	          // don't instantiate child path if value is null
-//	          //如果上层就是null了，还得看有没有儿子，没有那就结束
-//	          return;
-//	        } else {
-//	            //否则还得new一个，委派给ObjectWrapper.instantiatePropertyValue
-//	          metaValue = objectWrapper.instantiatePropertyValue(name, prop, objectFactory);
-//	        }
-//	      }
-//	      //递归调用setValue
-//	      metaValue.setValue(prop.getChildren(), value);
-//	    } else {
-//	        //到了最后一层了，所以委派给ObjectWrapper.set
-//	      objectWrapper.set(prop, value);
-//	    }
-//	  }
-//
 //	  //为某个属性生成元对象
 //	  public MetaObject metaObjectForProperty(String name) {
 //	      //实际是递归调用

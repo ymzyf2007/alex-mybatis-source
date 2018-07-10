@@ -3,6 +3,8 @@ package org.apache.ibatis.reflection.wrapper;
 import java.util.List;
 
 import org.apache.ibatis.reflection.MetaObject;
+import org.apache.ibatis.reflection.factory.ObjectFactory;
+import org.apache.ibatis.reflection.property.PropertyTokenizer;
 
 /**
  * 对象包装器
