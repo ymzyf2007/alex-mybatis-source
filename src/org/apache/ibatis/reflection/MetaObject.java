@@ -55,26 +55,40 @@ public class MetaObject {
 	 */
 	public Object getValue(String name) {
 		PropertyTokenizer prop = new PropertyTokenizer(name);
-		
-		
+		if(prop.hasNext()) {
+			MetaObject metaValue = metaObjectForProperty(prop.getIndexedName());
+			if(metaValue == SystemMetaObject.NULL_META_OBJECT) {
+				// 如果上层就是null了，那就结束，返回null
+				return null;
+			} else {
+				// 否则继续看下一层，递归调用getValue
+				return metaValue.getValue(prop.getChildren());
+			}
+		} else {
+			return objectWrapper.get(prop);
+		}
 	}
 	
-//	  public Object getValue(String name) {
-//	    
-//	    if (prop.hasNext()) {
-//	      MetaObject metaValue = metaObjectForProperty(prop.getIndexedName());
-//	      if (metaValue == SystemMetaObject.NULL_META_OBJECT) {
-//	          //如果上层就是null了，那就结束，返回null
-//	        return null;
-//	      } else {
-//	          //否则继续看下一层，递归调用getValue
-//	       return metaValue.getValue(prop.getChildren());
-//	      }
-//	    } else {
-//	      return objectWrapper.get(prop);
-//	    }
-//	  }
-//
+	/**
+	 * 为某个属性生成元对象
+	 * @param name
+	 * @return
+	 */
+	public MetaObject metaObjectForProperty(String name) {
+		// 实际是递归调用
+		Object value = getValue(name);
+		return MetaObject.forObject(value, objectFactory, objectWrapperFactory);
+	}
+	
+	public static MetaObject forObject(Object object, ObjectFactory objectFactory, ObjectWrapperFactory objectWrapperFactory) {
+		if(object == null) {
+			// 处理一下null，将null包装起来
+			return SystemMetaObject.NULL_META_OBJECT;
+		} else {
+			return new MetaObject(object, objectFactory, objectWrapperFactory);
+		}
+	}
+	
 //	  //设置值
 //	  //如person[0].birthdate.year
 //	  public void setValue(String name, Object value) {
@@ -99,15 +113,6 @@ public class MetaObject {
 //	    }
 //	  }
 //
-
-//	public static MetaObject forObject(Object object, ObjectFactory objectFactory, ObjectWrapperFactory objectWrapperFactory) {
-//	    if (object == null) {
-//	        //处理一下null,将null包装起来
-//	      return SystemMetaObject.NULL_META_OBJECT;
-//	    } else {
-//	      return new MetaObject(object, objectFactory, objectWrapperFactory);
-//	    }
-//	  }
 //
 //	  public ObjectFactory getObjectFactory() {
 //	    return objectFactory;
@@ -156,12 +161,7 @@ public class MetaObject {
 //	  public boolean hasGetter(String name) {
 //	    return objectWrapper.hasGetter(name);
 //	  }
-//	  //为某个属性生成元对象
-//	  public MetaObject metaObjectForProperty(String name) {
-//	      //实际是递归调用
-//	    Object value = getValue(name);
-//	    return MetaObject.forObject(value, objectFactory, objectWrapperFactory);
-//	  }
+
 //
 //	  public ObjectWrapper getObjectWrapper() {
 //	    return objectWrapper;
