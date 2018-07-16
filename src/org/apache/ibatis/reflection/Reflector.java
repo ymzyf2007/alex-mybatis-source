@@ -249,8 +249,8 @@ public class Reflector {
 	private void addMethodConflict(Map<String, List<Method>> conflictingMethods, String name, Method method) {
 		List<Method> list = conflictingMethods.get(name);
 	    if(list == null) {
-	      list = new ArrayList<Method>();
-	      conflictingMethods.put(name, list);
+	    	list = new ArrayList<Method>();
+	    	conflictingMethods.put(name, list);
 	    }
 	    list.add(method);
 	}
