@@ -25,15 +25,15 @@ public class GenericTokenParserTest {
 	
 	@Test
 	public void shouldDemonstrateGenericTokenReplacement() {
-		GenericTokenParser parser = new GenericTokenParser("${", "}", new VariableTokenHandler(new HashMap<String, String>() {
-			private static final long serialVersionUID = -1234811649085410855L;
-			{
-				put("first_name", "James");
-				put("initial", "T");
-				put("last_name", "Kirk");
-				put("", "");
-			}
-		}));
+		Map<String, String> variablesMap = new HashMap<String, String>();
+		variablesMap.put("first_name", "James");
+		variablesMap.put("initial", "T");
+		variablesMap.put("last_name", "Kirk");
+		variablesMap.put("", "");
+		TokenHandler handler = new VariableTokenHandler(variablesMap);
+		
+		GenericTokenParser parser = new GenericTokenParser("${", "}", handler);
+		
 		Assert.assertEquals("James T Kirk reporting.", parser.parse("${first_name} ${initial} ${last_name} reporting."));
 		Assert.assertEquals("Hello captain James T Kirk", parser.parse("Hello captain ${first_name} ${initial} ${last_name}"));
 		Assert.assertEquals("James T Kirk", parser.parse("${first_name} ${initial} ${last_name}"));

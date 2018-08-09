@@ -395,6 +395,20 @@ public class Reflector {
 	    return clazz;
 	}
 	
+	public boolean hasGetter(String propertyName) {
+		return getMethods.keySet().contains(propertyName);
+	}
+	  
+	public boolean hasSetter(String propertyName) {
+		return setMethods.keySet().contains(propertyName);
+	}
 	
+	public static void setClassCacheEnabled(boolean classCacheEnabled) {
+		Reflector.classCacheEnabled = classCacheEnabled;
+	}
+	
+	public static boolean isClassCacheEnabled() {
+		return classCacheEnabled;
+	}
 	
 }

@@ -9,6 +9,7 @@ import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.reflection.factory.DefaultObjectFactory;
 import org.apache.ibatis.reflection.factory.ObjectFactory;
+import org.apache.ibatis.reflection.wrapper.DefaultObjectWrapperFactory;
 import org.apache.ibatis.reflection.wrapper.ObjectWrapperFactory;
 import org.apache.ibatis.type.JdbcType;
 
@@ -48,9 +49,9 @@ public class Configuration {
 	protected ObjectFactory objectFactory = new DefaultObjectFactory();
 	protected ObjectWrapperFactory objectWrapperFactory = new DefaultObjectWrapperFactory();
 	
-//	  //映射注册机
-//	  protected MapperRegistry mapperRegistry = new MapperRegistry(this);
-//
+	// 映射注册机
+//	protected MapperRegistry mapperRegistry = new MapperRegistry(this);
+	
 //	  //默认禁用延迟加载
 //	  protected boolean lazyLoadingEnabled = false;
 //	  protected ProxyFactory proxyFactory = new JavassistProxyFactory(); // #224 Using internal Javassist instead of OGNL
